@@ -15,6 +15,7 @@
         "resolveJsonModule": true,
         "baseUrl": "./",
         "sourceMap": true,
+        "types": ["node"],
         "forceConsistentCasingInFileNames": true,
         "paths": {
             "@/*": ["src/*"]
