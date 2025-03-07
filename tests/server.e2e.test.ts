@@ -50,10 +50,10 @@ describe('Server', () => {
 
         // Verify the client script is injected
         const scriptSrc = await page.$eval(
-            'script[src="@console-pipe/client.ts"]',
+            'script[src="@console-pipe/client"]',
             (el: HTMLScriptElement) => el.src
         );
-        expect(scriptSrc).toContain('@console-pipe/client.ts');
+        expect(scriptSrc).toContain('@console-pipe/client');
     });
 
     it("should forward the logs in the client to the vite dev server", async() => {

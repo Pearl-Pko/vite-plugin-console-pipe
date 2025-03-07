@@ -2,24 +2,36 @@ import { Plugin } from 'vite';
 import fs from 'fs/promises';
 import { transform } from 'esbuild';
 
+async function getClientFilePath() {
+    const tsPath = new URL('./client.ts', import.meta.url);
+    const jsPath = new URL('./client.js', import.meta.url);
+
+    try {
+        await fs.access(tsPath); // Check if TypeScript file exists
+        return tsPath;
+    } catch {
+        return jsPath; // If not, use JavaScript file
+    }
+}
+
 export default function consolePipe(): Plugin {
     return {
         name: 'console-pipe',
         async load(id) {
-            if (id === '/@console-pipe/client.ts') {
+            if (id === '/@console-pipe/client') {
                 try {
                     const clientScript = await fs.readFile(
-                        new URL('./client.ts', import.meta.url),
+                        await getClientFilePath(),
                         'utf-8'
                     );
                     // return clientScript;
-                    return (await transform(clientScript, {
+                    return await transform(clientScript, {
                         loader: 'ts',
                         format: 'esm',
                         target: 'esnext',
 
                         sourcemap: true,
-                    }));
+                    });
                 } catch (error) {
                     console.error('Failed to load client file', error);
                     return null;
@@ -40,7 +52,7 @@ export default function consolePipe(): Plugin {
                     {
                         tag: 'script',
                         attrs: {
-                            src: '@console-pipe/client.ts',
+                            src: '@console-pipe/client',
                             type: 'module',
                         },
                         injectTo: 'head',

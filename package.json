@@ -1,26 +1,39 @@
 {
-  "name": "vite-plugin-console-pipe",
-  "version": "0.1.0",
-  "type": "module",
-  "scripts": {
-    "test": "vitest",
-    "dev": "vite"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.21.0",
-    "@testing-library/dom": "^10.4.0",
-    "@types/node": "^22.13.5",
-    "@vitest/browser": "^3.0.7",
-    "esbuild": "^0.25.0",
-    "eslint": "^9.21.0",
-    "eslint-config-prettier": "^10.0.1",
-    "eslint-plugin-prettier": "^5.2.3",
-    "globals": "^16.0.0",
-    "playwright": "^1.50.1",
-    "prettier": "^3.5.2",
-    "typescript": "^5.7.3",
-    "typescript-eslint": "^8.25.0",
-    "vite": "^6.2.0",
-    "vitest": "^3.0.7"
-  }
+    "name": "vite-plugin-console-pipe",
+    "version": "0.1.0",
+    "type": "module",
+    "main": "dist/index.cjs",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs"
+    },
+    "scripts": {
+        "test": "vitest",
+        "dev": "vite",
+        "build": "tsup"
+    },
+    "peerDependencies": {
+        "esbuild": "^0.25.0",
+        "vite": "^6.2.0"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.21.0",
+        "@testing-library/dom": "^10.4.0",
+        "@types/node": "^22.13.5",
+        "@vitest/browser": "^3.0.7",
+        "esbuild": "^0.25.0",
+        "eslint": "^9.21.0",
+        "eslint-config-prettier": "^10.0.1",
+        "eslint-plugin-prettier": "^5.2.3",
+        "globals": "^16.0.0",
+        "playwright": "^1.50.1",
+        "prettier": "^3.5.2",
+        "tsup": "^8.4.0",
+        "typescript": "^5.7.3",
+        "typescript-eslint": "^8.25.0",
+        "vite": "^6.2.0",
+        "vitest": "^3.0.7"
+    }
 }
