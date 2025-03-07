@@ -1,7 +1,9 @@
 {
     "name": "vite-plugin-console-pipe",
+    "description": "A package for development that forwards all logs from a client browser to the Vite dev server.",
     "version": "0.1.0",
     "type": "module",
+    "license": "MIT",
     "main": "dist/index.cjs",
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -9,11 +11,26 @@
         "import": "./dist/index.js",
         "require": "./dist/index.cjs"
     },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Pearl-Pko/vite-plugin-console-pipe.git"
+    },
+    "author": "Pearl-Pko",
+    "keywords": [
+        "vite",
+        "plugin",
+        "console"
+    ],
     "scripts": {
         "test": "vitest",
         "dev": "vite",
-        "build": "tsup"
+        "build": "tsup",
+        "prepare": "npm run build"
     },
+    "files": [
+        "dist",
+        "README.md"
+    ],
     "peerDependencies": {
         "esbuild": "^0.25.0",
         "vite": "^6.2.0"
