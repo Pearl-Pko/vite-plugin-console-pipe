@@ -20,27 +20,37 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
-            
+
             - name: Set up pnpm
               uses: pnpm/action-setup@v2
 
             - name: Set up Node.js
               uses: actions/setup-node@v4
               with:
-                node-version: 20
-                cache: 'pnpm'
-                
+                  node-version: 20
+                  cache: 'pnpm'
+
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
-            
+
+            - name: Cache Playwright browsers
+              uses: actions/cache@v3
+              with:
+                  path: ~/.cache/ms-playwright
+                  key: playwright-${{ runner.os }}
+                  restore-keys: playwright-
+
+            - name: Install Playwright browsers
+              run: pnpm exec playwright install --with-deps
+
             - name: Test
-              run: pnpm test 
+              run: pnpm test
 
             - name: Create Release Pull Request or Publish to npm
               id: changesets
               uses: changesets/action@v1
               with:
-                publish: npx changeset publish
+                  publish: npx changeset publish
               env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
