@@ -17,6 +17,7 @@ async function getClientFilePath() {
 export default function consolePipe(): Plugin {
     return {
         name: 'console-pipe',
+        apply: 'serve',
         async load(id) {
             if (id === '/@console-pipe/client') {
                 try {
