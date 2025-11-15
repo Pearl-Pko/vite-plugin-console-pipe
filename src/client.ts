@@ -1,3 +1,5 @@
+import { ConsoleLevel, LogEvent } from './type';
+
 let connected = false;
 
 const wrapConsole = () => {
@@ -13,16 +15,39 @@ const wrapConsole = () => {
         const originalMethod = console[method];
 
         console[method] = function (...args: any[]) {
-            sendLogsToServer(method, ...args);
+            sendLogsToServer({ type: method, data: args });
             originalMethod.apply(console, [...args]);
         };
     });
+
+    window.addEventListener('error', (event: ErrorEvent) => {
+        sendLogsToServer({
+            type: 'unhandled-error',
+            message: event.error?.message,
+            stack: event.error?.stack,
+        });
+    });
+
+    window.addEventListener(
+        'unhandledrejection',
+        (event: PromiseRejectionEvent) => {
+            // event.reason contains the rejection value (usually an Error)
+            const error =
+                event.reason instanceof Error
+                    ? event.reason
+                    : new Error(String(event.reason));
+
+            sendLogsToServer({
+                type: 'unhandled-error',
+                message: error.message,
+                stack: error.stack,
+            });
+        }
+    );
 };
 
-const sendLogsToServer = (type: ConsoleLevel, ...args: any[]) => {
-    const data: ConsolePipeEvent = { type: type, data: args };
-
-    if (connected) import.meta.hot?.send('console-pipe:log', data);
+const sendLogsToServer = (event: LogEvent) => {
+    if (connected) import.meta.hot?.send('console-pipe:log', event);
 };
 
 const bootstrap = () => {

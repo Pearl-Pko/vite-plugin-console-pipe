@@ -1,6 +1,12 @@
-type ConsoleLevel = "log" | "error" | "warn" | "info" | "debug";
+export type ConsoleLevel = 'log' | 'error' | 'warn' | 'info' | 'debug';
 
-interface ConsolePipeEvent  {
-    type: ConsoleLevel;
-    data: any[]
-}
+export type LogEvent =
+    | {
+          type: ConsoleLevel;
+          data: any[];
+      }
+    | {
+          type: 'unhandled-error';
+          message: string;
+          stack?: string;
+      };

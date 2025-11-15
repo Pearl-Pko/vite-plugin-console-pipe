@@ -1,6 +1,7 @@
 import { Plugin } from 'vite';
 import fs from 'fs/promises';
 import { transform } from 'esbuild';
+import { LogEvent } from './type';
 
 async function getClientFilePath() {
     const tsPath = new URL('./client.ts', import.meta.url);
@@ -42,8 +43,17 @@ export default function consolePipe(): Plugin {
 
         configureServer(server) {
             return () =>
-                server.ws.on('console-pipe:log', (args: ConsolePipeEvent) => {
-                    console.log(...args.data);
+                server.ws.on('console-pipe:log', (args: LogEvent) => {
+                    // console(...args.data);
+                    if (args.type === 'unhandled-error') {
+                        let output = `Unhandled Error: ${args.message}`;
+                        if (args.stack) {
+                            output += `\nStack Trace:\n${args.stack}`;
+                        }
+                        console.error(output);
+                    } else {
+                        console[args.type](...args.data);
+                    }
                 });
         },
         transformIndexHtml(html) {
@@ -55,6 +65,7 @@ export default function consolePipe(): Plugin {
                         attrs: {
                             src: '@console-pipe/client',
                             type: 'module',
+                            crossorigin: 'anonymous',
                         },
                         injectTo: 'head',
                     },
