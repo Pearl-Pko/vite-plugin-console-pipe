@@ -1,5 +1,11 @@
 # vite-plugin-console-pipe
 
+## 2.0.1
+
+### Patch Changes
+
+- [`73a9c9e`](https://github.com/Pearl-Pko/vite-plugin-console-pipe/commit/73a9c9e0acde2334c387bccba0647c0f50036630) Thanks [@Pearl-Pko](https://github.com/Pearl-Pko)! - Add readme
+
 ## 2.0.0
 
 ### Major Changes
