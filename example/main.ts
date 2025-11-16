@@ -6,20 +6,20 @@ const test = () => {
 };
 
 console.log('ddd');
-// const a = () => {
-//     const b = () => {
-//         throw new Error('Test error from client');
-//     };
-//     b();
-// };
+
+const a = () => {
+    const b = () => {
+        throw new Error('Test error from client');
+    };
+    b();
+};
+
 setInterval(async () => {
-    // a();
+    a();
 
-
-    
-    await new Promise((_, reject) =>
-        reject(new Error('Test unhandled rejection'))
-    );
+    // await new Promise((_, reject) =>
+    //     reject(new Error('Test unhandled rejection'))
+    // );
 }, 4000);
 
 // test();
