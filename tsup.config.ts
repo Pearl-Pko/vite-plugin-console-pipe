@@ -8,6 +8,7 @@ export default defineConfig([
         sourcemap: true,
         clean: true,
         minify: false,
+        shims: true,
     },
     {
         entry: ['src/client.ts'],

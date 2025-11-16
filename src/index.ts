@@ -5,10 +5,13 @@ import { LogEvent } from './type';
 import { SourceMap } from 'rollup';
 import { SourceMapConsumer } from 'source-map';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 async function getClientFilePath() {
-    const tsPath = new URL('./client.ts', import.meta.url);
-    const jsPath = new URL('./client.js', import.meta.url);
+    const dirname = path.dirname(fileURLToPath(import.meta.url));
+
+    const tsPath = path.join(dirname, 'client.ts');
+    const jsPath = path.join(dirname, 'client.js');
 
     try {
         await fs.access(tsPath); // Check if TypeScript file exists
