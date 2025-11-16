@@ -79,9 +79,15 @@ describe('Server', () => {
 
         // Simulate a console.log call in the browser
         await page.evaluate(() => {
-            setTimeout(() => {
-                throw new Error('Test unhandled error');
-            }, 0);
+            return new Promise<void>((resolve) => {
+                setTimeout(() => {
+                    try {
+                        throw new Error('Test unhandled error');
+                    } finally {
+                        resolve();
+                    }
+                }, 0);
+            });
         });
 
         expect(errorMock).toHaveBeenCalledWith(
