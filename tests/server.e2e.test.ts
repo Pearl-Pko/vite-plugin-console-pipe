@@ -1,5 +1,13 @@
 import { createServer, ViteDevServer } from 'vite';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import {
+    afterAll,
+    afterEach,
+    beforeAll,
+    describe,
+    expect,
+    it,
+    vi,
+} from 'vitest';
 import consolePipe from '../src';
 import { Browser, chromium, Page } from 'playwright';
 
@@ -8,21 +16,15 @@ let browser: Browser;
 let page: Page;
 
 describe('Server', () => {
-    let resolveLogPromise: (value: unknown) => void;
-    let logPromise: Promise<unknown>;
-    const originalConsoleLog = console.log;
+    const logMock = vi.fn();
+    const errorMock = vi.fn();
 
     beforeAll(async () => {
-        logPromise = new Promise((resolve) => {
-            resolveLogPromise = resolve;
+        vi.stubGlobal('console', {
+            ...console,
+            log: logMock,
+            error: errorMock,
         });
-        console.log = (...args: any[]) => {
-            if (args?.[0] === 'Test log message') {
-                resolveLogPromise(true);
-            }
-
-            originalConsoleLog.apply(console, [...args]);
-        };
 
         server = await createServer({
             plugins: [consolePipe()],
@@ -31,6 +33,7 @@ describe('Server', () => {
             },
             root: './tests',
         });
+
         await server.listen(4000);
 
         // Launch a browser
@@ -45,6 +48,10 @@ describe('Server', () => {
         await server?.close();
     });
 
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
     it('should inject the client script into the HTML', async () => {
         await page.goto('http://localhost:4000');
 
@@ -56,19 +63,29 @@ describe('Server', () => {
         expect(scriptSrc).toContain('@console-pipe/client');
     });
 
-    it("should forward the logs in the client to the vite dev server", async() => {
+    it('should forward the logs in the client to the vite dev server', async () => {
         await page.goto('http://localhost:4000');
 
-
-         // Simulate a console.log call in the browser
-         await page.evaluate(() => {
+        // Simulate a console.log call in the browser
+        await page.evaluate(() => {
             console.log('Test log message');
         });
 
-        // Wait for the server to receive the log message
-        await Promise.all([await logPromise]);
+        expect(logMock).toHaveBeenCalledWith('Test log message');
+    });
 
-        expect(true).toBe(true);
+    it('should forward the unhandled exceptions in the client to the vite dev server', async () => {
+        await page.goto('http://localhost:4000');
 
-    })
+        // Simulate a console.log call in the browser
+        await page.evaluate(() => {
+            setTimeout(() => {
+                throw new Error('Test unhandled error');
+            }, 0);
+        });
+
+        expect(errorMock).toHaveBeenCalledWith(
+            expect.stringContaining('Unhandled Error: Test unhandled error')
+        );
+    });
 });
