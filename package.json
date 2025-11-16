@@ -32,9 +32,9 @@
         "README.md"
     ],
     "peerDependencies": {
-        "esbuild": "^0.25.0",
-        "rollup": "^4.53.2",
-        "vite": "^6.2.0"
+        "esbuild": ">=0.25.0",
+        "rollup": ">=4.53.2",
+        "vite": ">=6.2.0"
     },
     "devDependencies": {
         "@changesets/changelog-github": "^0.5.1",
