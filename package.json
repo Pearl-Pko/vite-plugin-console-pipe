@@ -25,8 +25,7 @@
     "scripts": {
         "test": "vitest",
         "dev": "vite",
-        "build": "tsup",
-        "prepare": "npm run build"
+        "build": "tsup"
     },
     "files": [
         "dist",
