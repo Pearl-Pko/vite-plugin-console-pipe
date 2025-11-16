@@ -1,7 +1,7 @@
 {
     "name": "vite-plugin-console-pipe",
     "description": "A package for development that forwards all logs from a client browser to the Vite dev server.",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "packageManager": "pnpm@9.6.0",
     "type": "module",
     "license": "MIT",
