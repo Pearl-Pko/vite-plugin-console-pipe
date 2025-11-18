@@ -133,7 +133,7 @@ export default function consolePipe(): Plugin {
                             type: 'module',
                             crossorigin: 'anonymous',
                         },
-                        injectTo: 'head',
+                        injectTo: 'head-prepend',
                     },
                 ],
             };
