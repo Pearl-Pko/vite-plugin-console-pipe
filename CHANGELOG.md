@@ -1,5 +1,11 @@
 # vite-plugin-console-pipe
 
+## 2.0.2
+
+### Patch Changes
+
+- [`0545714`](https://github.com/Pearl-Pko/vite-plugin-console-pipe/commit/05457147b2fa4265033e6f7ad43f81e00ec2dd7e) Thanks [@Pearl-Pko](https://github.com/Pearl-Pko)! - update peerDependencies to use version ranges
+
 ## 2.0.1
 
 ### Patch Changes
