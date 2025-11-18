@@ -23,3 +23,5 @@ setInterval(async () => {
 }, 4000);
 
 // test();
+
+console.log(new Error('Test error object'));

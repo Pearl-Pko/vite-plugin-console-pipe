@@ -73,6 +73,58 @@ async function mapStackTrace(
     return lines.join('\n');
 }
 
+async function processValue(
+    value: unknown,
+    getSourceMap: (
+        id: string
+    ) => SourceMap | undefined | null | { mappings: '' }
+): Promise<unknown> {
+    // Handle Error objects with stack traces - format as plain string
+    if (
+        value &&
+        typeof value === 'object' &&
+        '__type' in value &&
+        value.__type === 'Error'
+    ) {
+        const errorObj = value as {
+            __type: string;
+            name: string;
+            message: string;
+            stack?: string;
+        };
+        let output = `${errorObj.name}: ${errorObj.message}`;
+        if (errorObj.stack) {
+            const mappedStack = await mapStackTrace(
+                errorObj.stack,
+                getSourceMap
+            );
+            output += `\n${mappedStack}`;
+        }
+        return output;
+    }
+
+    // Handle arrays - recursively process items
+    if (Array.isArray(value)) {
+        return Promise.all(
+            value.map((item) => processValue(item, getSourceMap))
+        );
+    }
+
+    // Handle plain objects - recursively process properties
+    if (value && typeof value === 'object') {
+        const obj = value as Record<string, unknown>;
+        const processed: Record<string, unknown> = {};
+        for (const key in obj) {
+            if (Object.prototype.hasOwnProperty.call(obj, key)) {
+                processed[key] = await processValue(obj[key], getSourceMap);
+            }
+        }
+        return processed;
+    }
+
+    return value;
+}
+
 export default function consolePipe(): Plugin {
     return {
         name: 'console-pipe',
@@ -101,22 +153,27 @@ export default function consolePipe(): Plugin {
         configureServer(server) {
             return () => {
                 server.ws.on('console-pipe:log', async (args: LogEvent) => {
+                    const getSourceMap = (id: string) =>
+                        server.moduleGraph.getModuleById(id)?.transformResult
+                            ?.map;
+
                     if (args.type === 'unhandled-error') {
                         let output = `Unhandled Error: ${args.message}`;
                         if (args.stack) {
                             output += `\nStack Trace:\n${args.stack}`;
                         }
 
-                        output = await mapStackTrace(output, (id: string) => {
-                            const map =
-                                server.moduleGraph.getModuleById(id)
-                                    ?.transformResult?.map;
-                            return map;
-                        });
+                        output = await mapStackTrace(output, getSourceMap);
 
                         console.error(output);
                     } else {
-                        console[args.type](...args.data);
+                        // Process all arguments to map any Error objects with stack traces
+                        const processedData = await Promise.all(
+                            args.data.map((item) =>
+                                processValue(item, getSourceMap)
+                            )
+                        );
+                        console[args.type](...processedData);
                     }
                 });
             };
